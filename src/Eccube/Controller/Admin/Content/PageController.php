@@ -118,8 +118,8 @@ class PageController extends AbstractController
         // 更新時
         $fileName = null;
         $namespace = '@user_data/';
+        $PrevPage = clone $Page;
         if ($id) {
-            $PrevPage = clone $Page;
             // 編集不可ページはURL、ページ名、ファイル名を保持
             if ($Page->getEditType() >= Page::EDIT_TYPE_DEFAULT) {
                 $isUserDataPage = false;
@@ -179,7 +179,7 @@ class PageController extends AbstractController
             foreach ($Page->getPageLayouts() as $PageLayout) {
                 $Page->removePageLayout($PageLayout);
                 $this->entityManager->remove($PageLayout);
-                $this->entityManager->flush($PageLayout);
+                $this->entityManager->flush();
             }
 
             $Layout = $form['PcLayout']->getData();
@@ -195,7 +195,7 @@ class PageController extends AbstractController
                 $PageLayout->setPage($Page);
 
                 $this->entityManager->persist($PageLayout);
-                $this->entityManager->flush($PageLayout);
+                $this->entityManager->flush();
             }
 
             $Layout = $form['SpLayout']->getData();
@@ -208,7 +208,7 @@ class PageController extends AbstractController
                 $PageLayout->setPage($Page);
 
                 $this->entityManager->persist($PageLayout);
-                $this->entityManager->flush($PageLayout);
+                $this->entityManager->flush();
             }
 
             $event = new EventArgs(

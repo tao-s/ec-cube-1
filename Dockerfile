@@ -23,6 +23,7 @@ RUN apt-get update \
     ssl-cert \
     unzip \
     zlib1g-dev \
+    libwebp-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && echo "en_US.UTF-8 UTF-8" >/etc/locale.gen \
@@ -30,6 +31,7 @@ RUN apt-get update \
   ;
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+  && docker-php-ext-configure gd --with-webp-dir=/usr/include/  --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ \
   && docker-php-ext-install -j$(nproc) zip gd mysqli pdo_mysql opcache intl pgsql pdo_pgsql \
   ;
 
@@ -54,6 +56,7 @@ EXPOSE 443
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Override with custom configuration settings
 COPY dockerbuild/php.ini $PHP_INI_DIR/conf.d/
+COPY dockerbuild/docker-php-entrypoint /usr/local/bin/
 
 RUN chown www-data:www-data /var/www \
   && mkdir -p ${APACHE_DOCUMENT_ROOT}/vendor \
